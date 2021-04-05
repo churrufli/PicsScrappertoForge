@@ -12,104 +12,87 @@ Public Class Form1
         Else
             mydir.Create()
         End If
+        
+        Dim lawebes As String = ReadWeb(url.Text)
+        Dim lawebin As String = ReadWeb(Replace(url.Text, "/es/", "/en/"))
 
-
-        'primero tendría que leer la web y cojer las imagenes
-        Dim lawebes As String = readweb(url.Text)
-        Dim lawebin As String = readweb(Replace(url.Text, "/es/", "/en/"))
-
-        txlog.Text = extraer(lawebin, "<img", ">")
+        txlog.Text = Extract(lawebin, "<img", ">")
         'Exit Sub
 
         Dim lineas = Split(txlog.Text, vbCrLf)
         For i = 0 To lineas.Length - 1
-            'If InStr(lineas(i).ToString, "png") > 0 Or InStr(lineas(i).ToString, "jpg") > 0 Then
-            Dim linea = lineas(i).ToString
-            'linea = Replace(linea, """", "")
-            If InStr(linea, patron.Text) > 0 Then
+            Dim MyLine = lineas(i).ToString
+            If InStr(MyLine, patron.Text) > 0 Then
+                Dim Myimage As String = Extract(MyLine, "src", patron.Text)
+                Myimage = Replace(Myimage, """", "")
+                Myimage = Replace(Myimage, "=", "")
 
-                Dim imagen As String = extraer(linea, "src", patron.Text)
+                ' ****IN OTHER LANGUAGES, UNCOMMENT THIS FOR A PERSONAL REPLACE (IN EXAMPLE, SCRAPPING SPANISH)
 
-                imagen = Replace(imagen, """", "")
-                imagen = Replace(imagen, "=", "")
-                ' ****lo comento para hacerlo internacional
-
-                'imagen = Replace(imagen, "/en_", "/sp_")
-                'imagen = Replace(imagen, "_en", "_es")
-                'imagen = Replace(imagen, "_EN_LR", "_ES")
-                'imagen = Replace(imagen, "_EN", "_ES")
-
+                'Myimage = Replace(imagen, "/en_", "/sp_")
+                'Myimage = Replace(imagen, "_en", "_es")
+                'Myimage = Replace(imagen, "_EN_LR", "_ES")
+                'Myimage = Replace(imagen, "_EN", "_ES")
+                'solo commander 16
+                'Myimage = Replace(imagen, "_EN.png", "_SP.png")
                 ' ****
 
-                imagen = Replace(imagen, vbCrLf, Nothing)
-                imagen = imagen & patron.Text
-                'solo commander 16
-                'imagen = Replace(imagen, "_EN.png", "_SP.png")
+                Myimage = Replace(Myimage, vbCrLf, Nothing)
+                Myimage = Myimage & patron.Text
+           
 
-                Dim tit As String = extraer(linea, "alt=""", """")
+                Dim tit As String = Extract(MyLine, "alt=""", """")
                 tit = Replace(tit, """", "")
                 tit = Replace(tit, "=", "")
                 tit = RemoveWhitespace(tit)
                 tit = Replace(tit, vbCrLf, Nothing)
+
                 tit = Trim(tit)
-                txlog.AppendText("Saving " & tit & " from " & imagen & vbCrLf)
+
+                txlog.AppendText("Saving " & tit & " from " & Myimage & vbCrLf)
                 tit = Replace(tit, "&rsquo;", "'")
                 tit = Replace(tit, "///", "")
                 tit = Replace(tit, "//", "")
                 tit = Replace(tit, "/", "")
                 tit = Replace(tit, "&AElig;", "Ae")
 
-                Dim lands = "forest,plain,island,mountain,swamp,wastes"
-                Dim myland = Split(lands, ",")
+                'Dim lands = "forest,plain,island,mountain,swamp,wastes"
+                'Dim myland = Split(lands, ",")
 
-                For a = 0 To myland.Count - 1
-                    If InStr(LCase(tit), myland(a)) > 0 Then
+                'For a = 0 To myland.Count - 1
+                '    If InStr(LCase(tit), myland(a)) > 0 Then
                         Dim myy = 1
                         While File.Exists(dirname.Text & "/" & tit & myy & ".full.jpg") = True
                             myy = myy + 1
-                            'If myy > 9 Then Exit While
                         End While
-                        tit = tit & myy
+                '        tit = tit & myy
 
-                        Exit For
-                    End If
-                Next a
+                '        Exit For
+                '    End If
+                'Next a
 
-                If InStr(imagen, "/") = 0 Or IsNothing(tit) = False Then
+                If InStr(Myimage, "/") = 0 Or IsNothing(tit) = False Then
                     If Directory.Exists(dirname.Text) = False Then Directory.CreateDirectory(dirname.Text)
-                    If File.Exists(dirname.Text & "/" & tit & ".full.jpg") = False Then
-                        Dim hayerror = False
+                    'If File.Exists(dirname.Text & "/" & tit & ".full.jpg") = False Then
+                        Dim ErrorExists = False
                         Dim downloaded = False
                         Try
                             Dim Client As New WebClient
-                            Client.DownloadFile(imagen, dirname.Text & "/" & tit & ".full.jpg")
-                            txlog.AppendText(imagen & " " & tit & vbCrLf)
+                                       
+                        Dim Myname = dirname.Text & "/" & tit & ".full.jpg"
+                         While File.Exists(Myname) = True
+                             Myname = dirname.Text & "/" & tit & myy & ".full.jpg"
+                        
+                         End While
+                            Client.DownloadFile(Myimage,Myname)
+                            txlog.AppendText(Myimage & " " & tit & vbCrLf)
                             downloaded = True
                             'Client.Dispose()
                         Catch
-                            hayerror = True
+                            ErrorExists = True
                         End Try
-                        'comento esto para no bajar en inglés
-                        'If downloaded = False Then
-                        '    Try
-                        '        Dim Client As New WebClient
-                        '        Client.DownloadFile(Replace(imagen, "/sp_", "/en_"), dirname.Text & "/" & tit & ".full.jpg")
-                        '        txlog.AppendText(imagen & " " & tit & vbCrLf)
-                        '        downloaded = True
-                        '    Catch
-                        '        hayerror = True
-                        '    End Try
-                        ' End If
-
-                        If hayerror Then
-
-                            'txlog.AppendText(Err.Description & imagen & " " & tit)
-                            '    'Exit Sub
-                        End If
-
-
-                        txlog.AppendText(imagen & " " & tit & vbCrLf)
-                    End If
+               txlog.AppendText(Myimage & " " & tit & vbCrLf)
+                    'End If
                 End If
 
             End If
@@ -128,15 +111,15 @@ Public Class Form1
         Return fs
     End Function
 
-    Function normalizar(t) As String
-        normalizar = t
+    Function Normalize(t) As String
+        Normalize = t
     End Function
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         'url.Text = "https://magic.wizards.com/es/articles/archive/card-image-gallery/hour-devastation"
     End Sub
 
-    Public Function extraer(ByRef strSource As String, ByRef strStart As String, ByRef strEnd As String,
+    Public Function Extract(ByRef strSource As String, ByRef strStart As String, ByRef strEnd As String,
                             Optional ByRef startPos As Integer = 0)
 
         Dim iPos As Integer, iEnd As Integer, strResult As String, lenStart As Integer = strStart.Length
@@ -151,22 +134,21 @@ Public Class Form1
                 startPos = iPos + lenStart
             End If
         Loop
-        extraer = res
+        Extract = res
     End Function
 
 
-    Function readweb(laUrl As String)
-        laUrl = Replace(laUrl, "'", "")
-        laUrl = Replace(laUrl, """", "")
+    Function ReadWeb(MyUrl As String)
+        MyUrl = Replace(MyUrl, "'", "")
+        MyUrl = Replace(MyUrl, """", "")
         Dim res As String
-        If laUrl = "" Then Exit Function
+        If MyUrl = "" Then Exit Function
 
         Dim request As WebRequest
         Try
-            request = WebRequest.Create(laUrl)
+            request = WebRequest.Create(MyUrl)
         Catch
-            'txlog.AppendText("Error reading" & laUrl & "  bad URL?")
-            readweb = ""
+            ReadWeb = ""
             Exit Function
         End Try
 
@@ -175,7 +157,7 @@ Public Class Form1
         Try
             response = request.GetResponse()
         Catch
-            readweb = ""
+            ReadWeb = ""
             Exit Function
         End Try
         Dim reader As New StreamReader(response.GetResponseStream())
@@ -189,10 +171,10 @@ Public Class Form1
 
         reader.Close()
         response.Close()
-        readweb = res
+        ReadWeb = res
     End Function
 
-    Function obtener(mainurl) As String
+    Function GetImage(mainurl) As String
         Dim doc As HtmlDocument
         doc = New HtmlDocument()
         Dim sourceString As String = New WebClient().DownloadString(mainurl)
@@ -206,7 +188,7 @@ Public Class Form1
             Console.WriteLine("Image: {0}", linkAddress)
             res = res & linkAddress.ToString & ","
         Next
-        obtener = res
+        GetImage = res
     End Function
 
     Function GetAbsoluteUrl(partialUrl As String, baseUrl As String)
@@ -231,7 +213,4 @@ Public Class Form1
             If InStr(n, "wastes") > 0 Then File.Delete(dirname.Text & "/" & fi.Name)
         Next
     End Sub
-
-
-    '
 End Class
