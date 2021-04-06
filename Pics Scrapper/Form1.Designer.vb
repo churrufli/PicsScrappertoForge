@@ -35,6 +35,7 @@ Partial Class Form1
         Me.Label4 = New System.Windows.Forms.Label()
         Me.Label5 = New System.Windows.Forms.Label()
         Me.Label7 = New System.Windows.Forms.Label()
+        Me.ispromo = New System.Windows.Forms.CheckBox()
         Me.SuspendLayout
         '
         'url
@@ -152,11 +153,24 @@ Partial Class Form1
         Me.Label7.TabIndex = 14
         Me.Label7.Text = "Replace expression"
         '
+        'ispromo
+        '
+        Me.ispromo.AutoSize = true
+        Me.ispromo.Font = New System.Drawing.Font("Microsoft Sans Serif", 7.2!)
+        Me.ispromo.Location = New System.Drawing.Point(477, 77)
+        Me.ispromo.Name = "ispromo"
+        Me.ispromo.Size = New System.Drawing.Size(248, 19)
+        Me.ispromo.TabIndex = 15
+        Me.ispromo.Text = "Promo Cards (final name with 1.full.png)"
+        Me.ispromo.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.ispromo.UseVisualStyleBackColor = true
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8!, 16!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(952, 417)
+        Me.Controls.Add(Me.ispromo)
         Me.Controls.Add(Me.Label7)
         Me.Controls.Add(Me.Label5)
         Me.Controls.Add(Me.Label4)
@@ -190,4 +204,5 @@ End Sub
     Friend WithEvents Label4 As Label
     Friend WithEvents Label5 As Label
     Friend WithEvents Label7 As Label
+    Friend WithEvents ispromo As CheckBox
 End Class

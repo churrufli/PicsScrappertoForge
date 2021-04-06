@@ -12,7 +12,7 @@ Public Class Form1
         Else
             mydir.Create()
         End If
-        
+
         Dim lawebes As String = ReadWeb(url.Text)
         Dim lawebin As String = ReadWeb(Replace(url.Text, "/es/", "/en/"))
 
@@ -27,19 +27,19 @@ Public Class Form1
                 Myimage = Replace(Myimage, """", "")
                 Myimage = Replace(Myimage, "=", "")
 
-                ' ****IN OTHER LANGUAGES, UNCOMMENT THIS FOR A PERSONAL REPLACE (IN EXAMPLE, SCRAPPING SPANISH)
+                ' ****IN OTHER LANGUAGES, UNCOMMENT THIS FOR A PERSONAL REPLACE (HERE, SCRAPPING SPANISH, LEAVE BLANK FOR ENGLISH)
 
-                'Myimage = Replace(imagen, "/en_", "/sp_")
-                'Myimage = Replace(imagen, "_en", "_es")
-                'Myimage = Replace(imagen, "_EN_LR", "_ES")
-                'Myimage = Replace(imagen, "_EN", "_ES")
+                Myimage = Replace(Myimage, "/en_", "/sp_")
+                Myimage = Replace(Myimage, "_en", "_es")
+                Myimage = Replace(Myimage, "_EN_LR", "_ES")
+                Myimage = Replace(Myimage, "_EN", "_ES")
                 'solo commander 16
                 'Myimage = Replace(imagen, "_EN.png", "_SP.png")
                 ' ****
 
                 Myimage = Replace(Myimage, vbCrLf, Nothing)
                 Myimage = Myimage & patron.Text
-           
+
 
                 Dim tit As String = Extract(MyLine, "alt=""", """")
                 tit = Replace(tit, """", "")
@@ -61,10 +61,10 @@ Public Class Form1
 
                 'For a = 0 To myland.Count - 1
                 '    If InStr(LCase(tit), myland(a)) > 0 Then
-                        Dim myy = 1
-                        While File.Exists(dirname.Text & "/" & tit & myy & ".full.jpg") = True
-                            myy = myy + 1
-                        End While
+                'Dim myy = 1
+                'While File.Exists(dirname.Text & "/" & tit & myy & ".full.jpg") = True
+                '    myy = myy + 1
+                'End While
                 '        tit = tit & myy
 
                 '        Exit For
@@ -74,24 +74,32 @@ Public Class Form1
                 If InStr(Myimage, "/") = 0 Or IsNothing(tit) = False Then
                     If Directory.Exists(dirname.Text) = False Then Directory.CreateDirectory(dirname.Text)
                     'If File.Exists(dirname.Text & "/" & tit & ".full.jpg") = False Then
-                        Dim ErrorExists = False
-                        Dim downloaded = False
-                        Try
-                            Dim Client As New WebClient
-                                       
-                        Dim Myname = dirname.Text & "/" & tit & ".full.jpg"
-                         While File.Exists(Myname) = True
-                             Myname = dirname.Text & "/" & tit & myy & ".full.jpg"
-                        
-                         End While
-                            Client.DownloadFile(Myimage,Myname)
-                            txlog.AppendText(Myimage & " " & tit & vbCrLf)
-                            downloaded = True
-                            'Client.Dispose()
-                        Catch
-                            ErrorExists = True
-                        End Try
-               txlog.AppendText(Myimage & " " & tit & vbCrLf)
+                    Dim ErrorExists = False
+                    Dim downloaded = False
+                    Try
+                        Dim Client As New WebClient
+                        Dim myy = 1
+                        Dim type As String = patron.Text
+
+                        Dim Myname
+
+                        If ispromo.Checked Then
+                            Myname = dirname.Text & "/" & tit & myy & ".full" & patron.Text
+                        Else
+                            Myname = dirname.Text & "/" & tit & ".full" & patron.Text
+                        End If
+
+                        While File.Exists(Myname) = True
+                            myy = myy + 1
+                            Myname = dirname.Text & "/" & tit & myy & ".full" & patron.Text
+                        End While
+                        Client.DownloadFile(Myimage, Myname)
+                        txlog.AppendText(Myimage & " " & tit & vbCrLf)
+                        downloaded = True
+                    Catch
+                        ErrorExists = True
+                    End Try
+                    txlog.AppendText(Myimage & " " & tit & vbCrLf)
                     'End If
                 End If
 
@@ -124,11 +132,11 @@ Public Class Form1
 
         Dim iPos As Integer, iEnd As Integer, strResult As String, lenStart As Integer = strStart.Length
         Dim res As String
-        Do Until iPos = - 1
+        Do Until iPos = -1
             strResult = String.Empty
             iPos = strSource.IndexOf(strStart, startPos)
             iEnd = strSource.IndexOf(strEnd, iPos + lenStart)
-            If iPos <> - 1 AndAlso iEnd <> - 1 Then
+            If iPos <> -1 AndAlso iEnd <> -1 Then
                 strResult = strSource.Substring(iPos + lenStart, iEnd - (iPos + lenStart))
                 res = res & strResult & vbCrLf
                 startPos = iPos + lenStart
@@ -212,5 +220,9 @@ Public Class Form1
             If InStr(n, "mountain") > 0 Then File.Delete(dirname.Text & "/" & fi.Name)
             If InStr(n, "wastes") > 0 Then File.Delete(dirname.Text & "/" & fi.Name)
         Next
+    End Sub
+
+    Private Sub patron_TextChanged(sender As Object, e As EventArgs) Handles patron.TextChanged
+
     End Sub
 End Class
