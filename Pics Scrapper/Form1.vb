@@ -7,9 +7,7 @@ Public Class Form1
     Private Sub scrap_Click(sender As Object, e As EventArgs) Handles scrap.Click
         'borro carpeta y creo
         Dim mydir As New DirectoryInfo(dirname.Text)
-        If mydir.Exists = True Then
-            'System.IO.Directory.Delete(dirname.Text, True)
-        Else
+        If mydir.Exists =false Then
             mydir.Create()
         End If
 
@@ -17,9 +15,9 @@ Public Class Form1
         Dim lawebin As String = ReadWeb(Replace(url.Text, "/es/", "/en/"))
 
         txlog.Text = Extract(lawebin, "<img", ">")
-        'Exit Sub
 
         Dim lineas = Split(txlog.Text, vbCrLf)
+
         For i = 0 To lineas.Length - 1
             Dim MyLine = lineas(i).ToString
             If InStr(MyLine, patron.Text) > 0 Then
@@ -80,7 +78,6 @@ Public Class Form1
                         Dim Client As New WebClient
                         Dim myy = 1
                         Dim type As String = patron.Text
-
                         Dim Myname
 
                         If ispromo.Checked Then
@@ -123,20 +120,16 @@ Public Class Form1
         Normalize = t
     End Function
 
-    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        'url.Text = "https://magic.wizards.com/es/articles/archive/card-image-gallery/hour-devastation"
-    End Sub
-
-    Public Function Extract(ByRef strSource As String, ByRef strStart As String, ByRef strEnd As String,
+ Public Function Extract(ByRef strSource As String, ByRef strStart As String, ByRef strEnd As String,
                             Optional ByRef startPos As Integer = 0)
 
         Dim iPos As Integer, iEnd As Integer, strResult As String, lenStart As Integer = strStart.Length
         Dim res As String
-        Do Until iPos = -1
+        Do Until iPos = - 1
             strResult = String.Empty
             iPos = strSource.IndexOf(strStart, startPos)
             iEnd = strSource.IndexOf(strEnd, iPos + lenStart)
-            If iPos <> -1 AndAlso iEnd <> -1 Then
+            If iPos <> - 1 AndAlso iEnd <> - 1 Then
                 strResult = strSource.Substring(iPos + lenStart, iEnd - (iPos + lenStart))
                 res = res & strResult & vbCrLf
                 startPos = iPos + lenStart
@@ -144,8 +137,7 @@ Public Class Form1
         Loop
         Extract = res
     End Function
-
-
+    
     Function ReadWeb(MyUrl As String)
         MyUrl = Replace(MyUrl, "'", "")
         MyUrl = Replace(MyUrl, """", "")
@@ -160,7 +152,6 @@ Public Class Form1
             Exit Function
         End Try
 
-
         Dim response As WebResponse
         Try
             response = request.GetResponse()
@@ -172,8 +163,6 @@ Public Class Form1
         Try
             res = reader.ReadToEnd()
         Catch
-
-
             Exit Function
         End Try
 
@@ -190,12 +179,12 @@ Public Class Form1
         Dim i = 0
         Dim res = ""
 
-
         For Each link As HtmlNode In doc.DocumentNode.SelectNodes("//img[@src]")
             Dim linkAddress = GetAbsoluteUrl(link.Attributes("src").Value, mainurl)
             Console.WriteLine("Image: {0}", linkAddress)
             res = res & linkAddress.ToString & ","
         Next
+
         GetImage = res
     End Function
 
@@ -211,8 +200,6 @@ Public Class Form1
         Dim mydir As New DirectoryInfo(dirname.Text)
         For Each fi In mydir.GetFiles
             Dim n As String = LCase(fi.Name)
-            Dim borrar = False
-
             If InStr(n, "plains") > 0 Then File.Delete(dirname.Text & "/" & fi.Name)
             If InStr(n, "forest") > 0 Then File.Delete(dirname.Text & "/" & fi.Name)
             If InStr(n, "island") > 0 Then File.Delete(dirname.Text & "/" & fi.Name)
@@ -220,9 +207,5 @@ Public Class Form1
             If InStr(n, "mountain") > 0 Then File.Delete(dirname.Text & "/" & fi.Name)
             If InStr(n, "wastes") > 0 Then File.Delete(dirname.Text & "/" & fi.Name)
         Next
-    End Sub
-
-    Private Sub patron_TextChanged(sender As Object, e As EventArgs) Handles patron.TextChanged
-
     End Sub
 End Class
